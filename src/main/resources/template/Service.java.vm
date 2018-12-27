@@ -1,0 +1,69 @@
+package ${package}.service.util;
+
+import com.schinta.paas.domain.${className};
+import com.schinta.paas.model.${className}DTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import java.util.Optional;
+
+/**
+ * ${comments}
+ * 
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+public interface ${className}Service {
+
+    /**
+    * Save a ${classname}.
+    *
+    * @param ${classname}DTO the entity to save
+    * @return the persisted entity
+    */
+	${className}DTO save(${className}DTO ${classname}DTO);
+
+    /**
+     * Get all the ${classname}s.
+     *
+     * @param pageable the pagination information
+     * @return the list of entities
+     */
+    Page<${className}DTO> findAll(Pageable pageable);
+
+    /**
+     * Get the "stcd" ${classname}.
+     *
+     * @param stcd the stcd of the entity
+     * @return the entity
+     */
+	${className}DTO findOne(String stcd);
+
+    /**
+     * Delete the "stcd" ${classname}.
+     *
+     * @param stcd the stcd of the entity
+     */
+    void delete(String stcd);
+
+    /**
+     * Search for the ${classname} corresponding to the query.
+     *
+     * @param query the query of the search
+     *
+     * @param pageable the pagination information
+     * @return the list of entities
+     */
+    Page<${className}DTO> search(String query, Pageable pageable);
+
+    /**
+     * Update all information for a specific ${classname}, and return the modified ${classname}.
+     *
+     * @param ${classname}DTO authority to update
+     * @return updated ${className}
+     */
+    public Optional<${className}DTO> update${className}(${className}DTO ${classname}DTO);
+
+
+    public ${className} create${className}(${className}DTO ${classname}DTO);
+}

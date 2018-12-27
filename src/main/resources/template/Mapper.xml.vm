@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.schinta.paas.biz.mapper.${className}Mapper">
+    <resultMap id="${className}" type="com.schinta.paas.biz.web.rest.dto.${className}DTO">
+        #foreach ($column in $columns)
+            <!-- $column.comments -->
+            <result column="${column.columnNameInData}" property="${column.attrname}" jdbcType="${column.attTypeInData}"/>
+        #end
+    </resultMap>
+    <select id="selectByCode" resultMap="${className}">
+        SELECT * from ${tableNameInData} where RISE_CD = #{code}
+    </select>
+</mapper>

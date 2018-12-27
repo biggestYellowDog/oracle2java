@@ -1,0 +1,61 @@
+package ${package}.service.impl;
+
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.schinta.paas.domain.${className};
+import ${package}.mapper.${className}Mapper;
+import com.schinta.paas.model.${className}DTO;
+import ${package}.service.mapper.${className}DTOMapper;
+import ${package}.service.util.${className}Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.Optional;
+
+
+
+@Service("${classname}Service")
+@Transactional
+public class ${className}ServiceImpl implements ${className}Service {
+
+    private final Logger log = LoggerFactory.getLogger(${className}ServiceImpl.class);
+
+    private final ${className}Mapper ${classname}Mapper;
+
+    private final ${className}DTOMapper ${classname}DTOMapper;
+
+    public ${className}ServiceImpl(${className}Mapper ${classname}Mapper, ${className}DTOMapper ${classname}DTOMapper) {
+        this.${classname}Mapper = ${classname}Mapper;
+        this.${classname}DTOMapper = ${classname}DTOMapper;
+    }
+
+    @Override
+    public ${className}DTO save(${className}DTO ${classname}DTO) {
+        log.debug("Request to save ${className} : {}", ${classname}DTO);
+        ${className} ${classname} = ${classname}DTOMapper.${classname}DTOTo${className}(${classname}DTO);
+            ${classname}Mapper.insertSelective(${classname});
+            ${className}DTO result = ${classname}DTOMapper.${classname}To${className}DTO(${classname});
+        return result;
+    }
+
+    @Override
+    public ${className}DTO findOne(String stcd) {
+        log.debug("Request to get a ${className} : {}", stcd);
+        ${className} ${classname} =  ${classname}Mapper.selectByPrimaryKey(stcd);
+        return ${classname}DTOMapper.${classname}To${className}DTO(${classname});
+    }
+
+    @Override
+    public void delete(String stcd) {
+        log.debug("Request to delete ${className} : {}", stcd);
+        ${classname}Mapper.deleteByPrimaryKey(stcd);
+    }
+	
+}

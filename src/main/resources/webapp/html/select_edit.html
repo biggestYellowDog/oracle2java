@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>无标题文档</title>
+</head>
+<body>
+<h3 style="width:100%; text-align:center">模拟可编辑的select框</h3>
+<div style="width:210px; height:28px; margin:auto; margin-top:28px; border:1px #ccc solid; position:relative">
+<select id="select1" style="width:100%; height:100%; line-height:28px; position:absolute; left:0px; top:0px" class="editable">
+<option value="0">请选择</option>
+<option value="0">选项1</option>
+<option value="0">选项2</option>
+<option value="0">选项3</option>
+</select>
+<input type="text" id="text1" style="width:90%; height:22px; position:absolute; left:0px; top:0px; z-index:100;"/>
+</div>
+
+<div style="width:210px; height:28px; margin:auto; margin-top:28px; border:1px #ccc solid; position:relative">
+<select id="select2" style="width:100%; height:100%; line-height:28px; position:absolute; left:0px; top:0px" class="editable">
+<option value="0">请选择</option>
+<option value="0">选项21</option>
+<option value="0">选项22</option>
+<option value="0">选项23</option>
+</select>
+<input type="text" id="text2" style="width:90%; height:22px; position:absolute; left:0px; top:0px; z-index:100;"/>
+</div>
+
+<div style="width:210px; height:28px; margin:auto; margin-top:28px; border:1px #ccc solid; position:relative">
+<select id="select3" style="width:100%; height:100%; line-height:28px; position:absolute; left:0px; top:0px" class="editable">
+<option value="0">请选择</option>
+<option value="0">选项21</option>
+<option value="0">选项22</option>
+<option value="0">选项23</option>
+</select>
+<input type="text" id="text3" style="width:90%; height:22px; position:absolute; left:0px; top:0px; z-index:100;"/>
+</div>
+<script language="javascript">
+/*
+Author:bruceZhao 2014-06-18
+*/
+	window.onload = function(){
+		//只需修改此处即可
+		var className = "editable";
+		var array = [];
+		var selects = document.getElementsByTagName("select");
+		//找到符合条件的select 和 text 对
+		for(var i = 0; i<selects.length; i++){
+			if(selects[i].getAttribute("class") == className){
+				//找到对应的text文本框
+				var text = selects[i].parentNode.lastElementChild;
+				var sel  = selects[i];
+				var arr = [];
+				arr[0] = sel;
+				arr[1] = text;
+				array.push(arr);
+			}
+		}
+		
+		for(var i=0; i<array.length;i++){
+			//遍历符合条件的select 和 text 并添加事件响应函数
+			var sel  = array[i][0];
+			var text = array[i][1];
+			sel.textObj = array[i][1];
+			text.selObj = array[i][0];
+			
+			sel.onchange = function(){
+				this.textObj.value = this.options[this.selectedIndex].text;
+			}
+			text.onchange = function(){
+				//去除text框开头结尾的空格
+				this.value = this.value.replace(/^\s*/g,"");
+				this.value = this.value.replace(/\s*$/g,"");
+				//如果text文本框内容发生改变 且select内部没有此text的选项 则加入到select的option选项中
+				for(var j=0;j<this.selObj.options.length;j++){
+					if(this.selObj.options[j].text == this.value){
+						return;
+					}
+				}
+				var opt = new Option();
+				opt.value = this.value;
+				opt.text = this.value;
+				this.selObj.options.add(opt);
+			}
+		}
+		
+	}
+</script>
+</body>
+</html>

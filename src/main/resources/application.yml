@@ -1,0 +1,10 @@
+spring:
+    datasource:
+        driver-class-name: com.mysql.jdbc.Driver
+#        url: jdbc:oracle:thin:@10.6.181.214:1521:schinta
+        url: jdbc:mysql://localhost:3306/paas?useUnicode=true&characterEncoding=utf8&useSSL=false
+        username: root
+        password: root
+
+server:
+    port: 8012

@@ -1,0 +1,154 @@
+package com.schinta.paas.biz.web.rest;
+
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.schinta.paas.domain.*;
+import ${package}.web.rest.util.HeaderUtil;
+import io.github.jhipster.web.util.ResponseUtil;
+import com.schinta.paas.biz.web.rest.StationApi;
+import com.schinta.paas.biz.web.rest.dto.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
+import java.util.Optional;
+import static org.apache.commons.beanutils.BeanUtils.copyProperties;
+import ${package}.mapper.${className}Mapper;
+
+@RestController
+public class ${className}Resource implements StationApi {
+
+    private final Logger log = LoggerFactory.getLogger(StationResource.class);
+
+    private final ${className}Mapper ${classname}Mapper;
+
+
+    public StationResource(${className}Mapper ${classname}Mapper) {
+        this.${classname}Mapper = ${classname}Mapper;
+    }
+
+
+    /**  @ApiOperation(value = "通过编码来删除一个${comments}", notes = "通过编码来删除一个${comments}", response = Void.class, tags={ "${comments}", })
+     *   @ApiResponses(value = {
+     *      @ApiResponse(code = 400, message = "提供的编码无效", response = Void.class),
+     *      @ApiResponse(code = 404, message = "没有找到相应的${comments}", response = Void.class) })
+     *   @RequestMapping(value = "/station/{code}/${classname}/",
+     *       produces = {"application/json" },
+     *      method = RequestMethod.DELETE)
+     */
+    @Override
+    public ResponseEntity<Void> delete${className}(String code) {
+        log.debug("REST request to delete ${className} : {}", code);
+            ${classname}Mapper.deleteByPrimaryKey(code);
+        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert("${className}", code)).build();
+    }
+
+
+    /**  @ApiOperation(value = "分页查所有的${comments}", notes = "所有的${comments}.并分页.", response = ${className}DTO.class, responseContainer = "List", tags={ "${comments}", })
+     *   @ApiResponses(value = {
+     *       @ApiResponse(code = 200, message = "所有的${comments}并分页", response = ${className}DTO.class, responseContainer = "List") })
+     *   @RequestMapping(value = "/station/${classname}s/inPage/",
+     *       produces = { "application/json" },
+     *       method = RequestMethod.GET)
+     */
+    @Override
+    public ResponseEntity<List<${className}DTO>> findAll${className}s(Integer pageNumber, Integer pageSize) {
+        log.debug("REST request to get a page of ${className}s");
+        PageHelper.startPage(pageNumber, pageSize);
+        List<${className}> ${classname}s = ${classname}Mapper.selectAll();
+        List<${className}DTO> list = new ArrayList<${className}DTO>();
+        for(${className} ${classname}: ${classname}s){
+                ${className}DTO ${classname}DTO = new ${className}DTO();
+            try {
+                copyProperties(${classname}DTO, ${classname});
+                list.add(${classname}DTO);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
+        PageInfo<${className}DTO> pageInfo = new PageInfo<>(list);
+        return new ResponseEntity<>(pageInfo.getList(), HttpStatus.OK);
+    }
+
+    /**  @ApiOperation(value = "通过编码来找${comments}", notes = "得到${comments}", response = ${className}DTO.class, tags={ "${comments}", })
+     *   @ApiResponses(value = {
+     *      @ApiResponse(code = 200, message = "操作成功", response = ${className}DTO.class),
+     *      @ApiResponse(code = 400, message = "无效的编码", response = Void.class),
+     *      @ApiResponse(code = 404, message = "没有找到相应的${comments}", response = Void.class) })
+     *   @RequestMapping(value = "/station/{code}/${classname}/",
+     *       produces = { "application/json" },
+     *       method = RequestMethod.GET)
+     */
+    @Override
+    public ResponseEntity<List<${className}DTO>> find${className}ByCode(String code) {
+        log.debug("REST request to get ${className} : {}", code);
+        List<${className}DTO> ${classname}DTOs= ${classname}Mapper.selectByCode(code);
+        return new ResponseEntity<>(${classname}DTOs, HttpStatus.OK);
+    }
+
+
+#*    /**  @ApiOperation(value = "查所有的${comments}不分页", notes = "返回所有的${comments}.不分页.", response = ${className}DTO.class, responseContainer = "List", tags={ "${comments}", })
+     *   @ApiResponses(value = {
+     *       @ApiResponse(code = 200, message = "所有的${comments}不分页", response = ${className}DTO.class, responseContainer = "List") })
+     *   @RequestMapping(value = "/station/${classname}s/outPage",
+     *       produces = { "application/json" },
+     *       method = RequestMethod.GET)
+     */
+    @Override
+    public ResponseEntity<List<${className}DTO>> findAll${className}sOutPage() {
+        log.debug("REST request to get all ${className}s");
+        List<${className}> ${classname}s = ${classname}Mapper.selectAll();
+        List<${className}DTO> list = new ArrayList<${className}DTO>();
+        for(${className} ${classname}: ${classname}s){
+                ${className}DTO ${classname}DTO = new ${className}DTO();
+            try {
+                copyProperties(${classname}DTO, ${classname});
+                list.add(${classname}DTO);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }*#
+
+
+
+  #*  /**  @ApiOperation(value = "通过行政编码来查${comments},为空查所有", notes = "得到${comments}", response = ${className}DTO.class, tags={ "${comments}", })
+     *   @ApiResponses(value = {
+     *      @ApiResponse(code = 200, message = "操作成功", response = ${className}DTO.class),
+     *      @ApiResponse(code = 400, message = "无效的编码", response = Void.class),
+     *      @ApiResponse(code = 404, message = "没有找到相应的${comments}", response = Void.class) })
+     *   @RequestMapping(value = "/station/${classname}/region/",
+     *       produces = { "application/json" },
+     *       method = RequestMethod.GET)
+     */
+    @Override
+    public ResponseEntity<List<${className}DTO>> find${className}ByRegionCode(String regionCode) {
+        if(regionCode == null || regionCode.equals("")){
+            regionCode = "";
+        }else {
+            regionCode = " where AD_CD='"+regionCode+"'";
+        }
+        log.debug("REST request to get ${className} : {}", regionCode);
+        List<${className}DTO> list = new ArrayList<${className}DTO>();
+        List<${className}> ${classname}s= ${classname}Mapper.selectByRegionCode(regionCode);
+        for(${className} ${classname}: ${classname}s){
+                ${className}DTO ${classname}DTO = new ${className}DTO();
+            try {
+                copyProperties(${classname}DTO,${classname});
+                list.add(${classname}DTO);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }*#
+}

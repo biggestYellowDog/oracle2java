@@ -1,0 +1,44 @@
+package ${package}.service.mapper;
+
+import com.schinta.paas.domain.${className};
+import com.schinta.paas.model.${className}DTO;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+@Service
+public class ${className}DTOMapper {
+
+    public ${className}DTO ${classname}To${className}DTO(${className} ${classname}) {
+        return new ${className}DTO(${classname});
+    }
+
+    public List<${className}DTO> ${classname}sTo${className}DTOs(List<${className}> ${classname}s) {
+        return ${classname}s.stream()
+                .filter(Objects::nonNull)
+                .map(this::${classname}To${className}DTO)
+                .collect(Collectors.toList());
+    }
+
+    public ${className} ${classname}DTOTo${className}(${className}DTO ${classname}DTO) {
+        if (${classname}DTO == null) {
+            return null;
+        } else {
+            ${className} ${classname} = new ${className}();
+            #foreach ($column in $columns)
+                ${classname}.set${column.attrName}(${classname}DTO.get${column.attrName}());
+            #end
+            return ${classname};
+        }
+    }
+
+    public List<${className}> ${classname}DTOsTo${className}s(List<${className}DTO> ${classname}s) {
+        return ${classname}s.stream()
+                .filter(Objects::nonNull)
+                .map(this::${classname}DTOTo${className})
+                .collect(Collectors.toList());
+    }
+
+}

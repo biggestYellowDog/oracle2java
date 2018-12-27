@@ -1,0 +1,22 @@
+package ${package}.biz.mapper;
+
+import com.schinta.paas.biz.web.rest.dto.${className}DTO;
+import tk.mybatis.mapper.common.Mapper;
+import java.util.List;
+
+/**
+ * ${comments}
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+public interface ${className}Mapper extends Mapper<${className}> {
+
+
+    List<${className}DTO>  selectByCode(@Param(value = "code")String code);
+
+
+}
+
+

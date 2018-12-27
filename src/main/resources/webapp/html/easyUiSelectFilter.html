@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+    <style>
+        body {
+            text-align: center;
+            margin: 100px auto;
+        }
+
+        .demo-info {
+            margin: 20px auto;
+        }
+    </style>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta name="description" content="demo!">
+    <title>Filter ComboBox </title>
+    <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/icon.css">
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.1.min.js"></script>
+    <script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
+</head>
+<body>
+<h4>js小点心，慢用</h4>
+
+<div class="demo-info">
+    <input id="cg" style="width:150px"></input>
+</div>
+
+
+<script type="text/javascript">
+    $(function () {
+        $('#cg').combobox({
+            valueField: 'id',
+            textField: 'text',
+            fitColumns: true,
+            data: [{
+                "id": 1,
+                "text": "阿门"
+            }, {
+                "id": 2,
+                "text": "逼格"
+            }, {
+                "id": 3,
+                "text": "大神",
+                "selected": true
+            }, {
+                "id": 4,
+                "text": "低调"
+            }, {
+                "id": 5,
+                "text": "a易容"
+            }, {
+                "id": 6,
+                "text": "福气来"
+            }, {
+                "id": 7,
+                "text": "鸟人鸟语"
+            }
+            ],
+            filter: function (q, row) {
+                var opts = $(this).combobox('options');
+                return row[opts.textField].indexOf(q) != -1;
+
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

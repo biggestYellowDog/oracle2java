@@ -1,0 +1,955 @@
+
+<!DOCTYPE html>
+<html style="height: 100%">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>监控主看板</title>
+    <meta name="description" content="速必达物流可视化平台">
+    <meta name="keywords" content="index">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="jquery-2.2.3.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="echarts4.0.4.min.js"></script>
+    <script src="ng-app.js"></script>
+    <style>
+        *,p{margin:0;padding:0;}
+        .txt-red{color:#F56C6C!important;}
+        .icon-right{display:inline-block;margin-right:5px;width:40px;text-align:right;}
+        .left-wrap{float:left;width:240px;margin:5px;z-index:3;position:relative;}
+        .left-wrap .top-part{margin-bottom:-10px;color:#05c3f9;}
+        .left-wrap .item-wrap{border:1px solid #0a92c8;margin:0px 0;}
+        .left-wrap .item-wrap .tit{background:rgba(0, 170, 238, 0.8);color:#031525;font-size:16px;padding:5px 10px;text-align:center;}
+        .left-wrap .item-wrap .content{line-height:2;padding:5px 10px;}
+        .left-wrap .item-wrap .content p{cursor:pointer;color:#031525;font-size:14px;font-family:"Microsoft YaHei",FreeSans,Arimo,"Droid Sans","wenquanyi micro hei";}
+        .left-wrap .item-wrap .content p:hover{text-decoration:underline;}
+        .left-wrap .item-wrap .content p span{color:#031525;}
+
+        .right-wrap{float:right;width:300px;margin:20px;z-index:3;position:relative;}
+        #element-table {table-layout: fixed;}
+        #element-table td{
+            word-wrap:break-word;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+            -o-text-overflow:ellipsis;
+            -moz-text-overflow: ellipsis;
+            -webkit-text-overflow: ellipsis;
+        }
+        #element-table th:nth-child(2){width:180px!important;}
+        #element-table th:nth-child(3),#element-table th:nth-child(4){width:160px!important;}
+    </style>
+</head>
+<body style="height: 100%; margin: 0">
+<div id="container" style="height: 100%;position:absolute;width:100%;z-index:1;"></div>
+<!--左边部分-->
+<div id="div_order" class="left-wrap">
+    <div class="top-part"  style="display:none">&nbsp;&nbsp;更新时间：<span id="sp_updatetime"></span>分钟前</div>
+    <div class="item-wrap">
+        <div class="tit" style="text-align:left"><a  onclick="queryCar()" style="color:#031525">城配</a><span class="pull-right" style="vertical-align:middle;">
+				<span class="icon-right" style="vertical-align:middle;width:80px;">配送任务</span>
+				<span class="icon-right" style="vertical-align:middle;"><a data-toggle="modal" data-target="#div_abnormal_desc" style="color:#333;" class="pull-right">逾期</a></span>
+				</span></div>
+        <div class="content">
+            <p><span onclick="queryorg('同城配','生效待调度')">待调度</span>
+                <span class="pull-right" onclick="queryorgAbnormal('同城配','生效待调度')">
+						<span id="tcp_b" class="icon-right" ></span>
+						<span  id="tcp_b_abnormal" class="icon-right txt-red" ></span>
+					</span>
+            </p>
+            <p> <span  onclick="queryorg('同城配','调度待发运')">待发运</span>
+                <span class="pull-right" onclick="queryorgAbnormal('同城配','调度待发运')">
+						<span id="tcp_c" class="icon-right" ></span>
+						<span id="tcp_c_abnormal" class="icon-right txt-red" ></span>
+					</span>
+            </p>
+            <p>   <span  onclick="queryorg('同城配','发运未运抵')">待运抵</span>
+                <span class="pull-right" onclick="queryorgAbnormal('同城配','发运未运抵')">
+							<span id="tcp_d" class="icon-right" ></span>
+							<span id="tcp_d_abnormal" class="icon-right txt-red" ></span>
+						</span>
+            </p>
+            <p> <span  onclick="queryorg('同城配','运抵待回单')">待回单</span>
+                <span class="pull-right"   onclick="queryorgAbnormal('同城配','运抵待回单')">
+							<span id="tcp_e" class="icon-right" ></span>
+							<span id="tcp_e_abnormal" class="icon-right txt-red" ></span>
+						</span>
+            </p>
+        </div>
+    </div>
+    <div class="item-wrap">
+        <div class="tit" style="text-align:left">支线<span class="pull-right" style="vertical-align:middle;">
+				<span class="icon-right" style="vertical-align:middle;width:80px;">配送任务</span>
+				<span class="icon-right" style="vertical-align:middle;"><a data-toggle="modal" data-target="#div_zx_abnormal_desc" style="color:#333;" class="pull-right">逾期</a></span>
+				</span></div>
+        <div class="content">
+            <p><span onclick="queryorg('支线','生效待调度')">待调度</span>
+                <span class="pull-right" onclick="queryorgAbnormal('支线','生效待调度')">
+						<span id="obl_b" class="icon-right" ></span>
+						<span  id="obl_b_abnormal" class="icon-right txt-red" ></span>
+					</span>
+            </p>
+            <p> <span  onclick="queryorg('支线','调度待发运')">待发运</span>
+                <span class="pull-right" onclick="queryorgAbnormal('支线','调度待发运')">
+						<span id="obl_c" class="icon-right" ></span>
+						<span id="obl_c_abnormal" class="icon-right txt-red" ></span>
+					</span>
+            </p>
+            <p>   <span  onclick="queryorg('支线','发运未运抵')">待运抵</span>
+                <span class="pull-right" onclick="queryorgAbnormal('支线','发运未运抵')">
+							<span id="obl_d" class="icon-right" ></span>
+							<span id="obl_d_abnormal" class="icon-right txt-red" ></span>
+						</span>
+            </p>
+            <p> <span  onclick="queryorg('支线','运抵待回单')">待回单</span>
+                <span class="pull-right"   onclick="queryorgAbnormal('支线','运抵待回单')">
+							<span id="obl_e" class="icon-right" ></span>
+							<span id="obl_e_abnormal" class="icon-right txt-red" ></span>
+						</span>
+            </p>
+        </div>
+    </div>
+    <div class="item-wrap">
+        <div class="tit">出库单</div>
+        <div class="content">
+            <a  onclick="queryout('out','PLAN')"><p>待拣货<span class="pull-right"><span id="out_a" class="icon-right"></span></span></p></a>
+            <a  onclick="queryout('out','INWORK')"><p>拣货中<span class="pull-right"><span id="out_b" class="icon-right"></span></span></p></a>
+            <a  onclick="queryout('out','PICKED')"><p>待出库<span class="pull-right"><span id="out_c" class="icon-right"></span></span></p></a>
+        </div>
+    </div>
+    <div class="item-wrap">
+        <div class="tit">入库单</div>
+        <div class="content">
+            <a  onclick="queryout('in','PLAN')"><p>待入库<span class="pull-right"><span id="in_a" class="icon-right"></span></span></p></a>
+        </div>
+    </div>
+</div>
+<!--右边部分-->
+<div class="right-wrap">
+    <div id="container_org" style="height: 550px;position:absolute;width:300px;z-index:3;"></div>
+</div>
+
+
+<!--弹窗-->
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="div_abnormal_desc" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    同城逾期任务标准：（高海桂提供）
+                </h4>
+            </div>
+            <div class="modal-body">
+                <p>逾期未调度：应签收时间当天12:00前未调度</p>
+                <p>逾期未发运：应签收时间当天14:00前未发运</p>
+                <p>逾期未运抵：应签收时间前未运抵</p>
+                <p>逾期未回单：应回单时间前未回单</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    关闭
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="div_zx_abnormal_desc" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    支线逾期任务标准：（马俊、程惠娟提供）
+                </h4>
+            </div>
+            <div class="modal-body">
+                <p>逾期未调度：当天截单时间前已生效当天23:59前未调度</p>
+                <p>逾期未发运：暂无标准（待运作部门讨论后提供）</p>
+                <p>逾期未运抵：已发运，按照OTD时效应运抵未运抵的</p>
+                <p>逾期未回单：自调度当天23:59:59起，未在约定时间内完成系统回单确为不及时</p>
+                <p>                   (不及时标准：自调度当天23:59:59起，在约定时间内完成系统回单确认为及时，</p>
+                <p>                  否则，不及时；运输时限在3天及以内的订单，回单约定时间为10天，运输时限在3天以上的订单，回单约定时间为20天。)</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    关闭
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="div_abnormal" tabindex="-1" role="dialog" aria-labelledby="abnormal_title" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="width:700px;margin-left:-50px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
+                </button>
+                <h4 class="modal-title" id="abnormal_title">逾期明细</h4>
+            </div>
+            <div class="modal-body" style="height:400px;overflow-y:auto;">
+                <table id="element-table" class="table table-bordered">
+                    <thead>
+                    <tr id="tcp_date_title">
+                    </tr>
+                    </thead>
+                    <tbody  id="tcp_date_body">
+
+                    </tbody>
+                </table>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary"  onclick="doExportAbnormal()">导出Excel</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!--<div id="div_abnormal"  style="display:none">
+     <span id="abnormal_title"></span>
+     <table id="element-table" class="table table-bordered">
+                <thead>
+                  <tr id="tcp_date_title">
+                  </tr>
+                </thead>
+                <tbody  id="tcp_date_body">
+
+                </tbody>
+            </table>
+</div>-->
+
+
+<!-- 正在加载模态框-->
+<div class="modal fade" id="Loading" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="background:transparent;margin-top:40%;box-shadow:none;border:none;">
+            <div class="modal-body" style="text-align:center;">
+                正在加载...
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script type="text/javascript">
+    var  szordertype_down;
+    var szstatus_down;
+    var dom = document.getElementById("container");
+    var myChart = echarts.init(dom,"");
+    var uploadedDataURL = "data-1517645039291-B1vgpymUz.json";
+    myChart.hideLoading();
+    var geoCoordMap=[];
+    var data=[];
+    var convertData = function(data) {
+        var res = [];
+        for (var i = 0; i < data.length; i++) {
+            var geoCoord = geoCoordMap[data[i].name];
+            if (geoCoord) {
+                res.push({
+                    name: data[i].name,
+                    value: geoCoord.concat(data[i].value)
+                });
+            }
+        }
+        return res;
+    };
+    function  queryCar(){
+        $.ajax({
+            type : "post",
+            async : true,            //异步请求（同步请求将会锁住浏览器，用户其他操作必须等待请求完成才可以执行）
+            url : dateHost+"/api/real_time.do?sztype=szcar",    //请求发送到TestServlet处
+            data : {},
+            dataType : "json",        //返回数据形式为json
+            success : function(result) {
+                //请求成功时执行该函数内容，result即为服务器返回的json对象
+                var res = [];
+                var sitotail = 0;
+                var updatetime ;
+                if (result) {
+                    for(var i=0;i<result.length;i++){
+                        geoCoordMap[result[i].szcode] = new Array(result[i].szlongitude,result[i].szlatitude);
+                        data.push({
+                            name: result[i].szcode,
+                            value: new Array(result[i].mm)
+                        });
+                        sitotail +=parseInt(result[i].mm) ;
+                        updatetime = result[i].szdiff;
+                    }
+
+                }
+
+                $.getJSON(uploadedDataURL, function(geoJson) {
+                    echarts.registerMap('zhongguo', geoJson);
+                    // console.log(convertData(data));
+                    option = {
+                        title: {
+                            text: '同城配在途车辆办事处分布',
+                            subtext: ' 更新时间：'+updatetime +'  分钟前车辆总数：'+sitotail,
+                            x: 'center',
+                            textStyle: {
+                                color: '#031525'
+                            },
+                            subtextStyle: {
+                                color: '#031525'
+                            }
+                        },
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: function(params) {
+                                if (typeof(params.value)[2] == "undefined") {
+                                    return params.name + ' : ' + params.value;
+                                } else {
+                                    return params.name + ' : ' + params.value[2];
+                                }
+                            }
+                        },
+                        legend: {
+                            orient: 'vertical',
+                            y: 'bottom',
+                            x: 'right',
+                            data: ['sell_area'],
+                            textStyle: {
+                                color: '#fff'
+                            }
+                        },
+                        geo: {
+                            show: true,
+                            map: 'zhongguo',
+                            roam: true,
+                            left: '250',
+                            right:'400',
+                            itemStyle: {
+                                normal: {
+                                    areaColor: '#031525',
+                                    borderColor: '#3B5077',
+                                },
+                                emphasis: {
+                                    areaColor: '#2B91B7',
+                                }, label:{
+                                    show:false
+                                }
+                            }
+                        },
+                        series: [{
+                            name: 'credit_pm2.5',
+                            type: 'effectScatter',
+                            coordinateSystem: 'geo',
+                            data: convertData(data),
+                            rippleEffect: {
+                                period: 8,
+                                brushType: 'stroke',
+                                scale: 3
+                            },
+                            symbolSize: function(val) {
+                                if (val[2] <= 50) {
+                                    return 6
+                                }
+                                if (val[2] > 50 && val[2] <= 100) {
+                                    return 10
+                                }
+                                if (val[2] > 100) {
+                                    return 14
+                                }
+                            },
+                            label: {
+                                normal: {
+                                    formatter: '{b}',
+                                    position: 'right',
+                                    show: true
+                                },
+                                emphasis: {
+                                    show: true
+                                }
+                            },
+                            itemStyle: {
+                                normal: {
+                                    color: '#05C3F9'
+                                }
+                            }
+                        }
+
+                        ]
+                    };
+                    myChart.setOption(option);
+                });
+
+            },
+            error : function(errorMsg) {
+
+            }
+        })
+    }
+    queryCar();
+
+    function  queryOrder(){
+        $.ajax({
+            type : "post",
+            async : true,            //异步请求（同步请求将会锁住浏览器，用户其他操作必须等待请求完成才可以执行）
+            url : dateHost+"/api/real_time.do?sztype=szorder",    //请求发送到TestServlet处
+            data : {},
+            dataType : "json",        //返回数据形式为json
+            success : function(result) {
+
+                $("#tcp_b").html("");
+                $("#tcp_c").html("");
+                $("#tcp_d").html("");
+                $("#tcp_e").html("");
+                $("#tcp_b_abnormal").html("");
+                $("#tcp_c_abnormal").html("");
+                $("#tcp_d_abnormal").html("");
+                $("#tcp_e_abnormal").html("");
+
+
+                $("#obl_b").html("");
+                $("#obl_c").html("");
+                $("#obl_d").html("");
+                $("#obl_e").html("");
+
+                $("#obl_b_abnormal").html("");
+                $("#obl_c_abnormal").html("");
+                $("#obl_d_abnormal").html("");
+                $("#obl_e_abnormal").html("");
+                var updatetime ;
+                for(var i=0;i<result.length;i++){
+
+                    if("同城配"== result[i].szorderfrom && "生效待调度"== result[i].szstatus_node){
+                        $("#tcp_b").html(result[i].mm);
+                        $("#tcp_b_abnormal").html(result[i].siabnormal_mm);
+                    }
+                    if("同城配"== result[i].szorderfrom && "调度待发运"== result[i].szstatus_node){
+                        $("#tcp_c").html(result[i].mm);
+                        $("#tcp_c_abnormal").html(result[i].siabnormal_mm);
+                    }
+                    if("同城配"== result[i].szorderfrom && "发运未运抵"== result[i].szstatus_node){
+                        $("#tcp_d").html(result[i].mm);
+                        $("#tcp_d_abnormal").html(result[i].siabnormal_mm);
+                    }
+                    if("同城配"== result[i].szorderfrom && "运抵待回单"== result[i].szstatus_node){
+                        $("#tcp_e").html(result[i].mm);
+                        $("#tcp_e_abnormal").html(result[i].siabnormal_mm);
+                    }
+
+
+                    if("支线"== result[i].szorderfrom && "生效待调度"== result[i].szstatus_node){
+                        $("#obl_b").html(result[i].mm);
+                        $("#obl_b_abnormal").html(result[i].siabnormal_mm);
+                    }
+                    if("支线"== result[i].szorderfrom && "调度待发运"== result[i].szstatus_node){
+                        $("#obl_c").html(result[i].mm);
+                        $("#obl_c_abnormal").html(result[i].siabnormal_mm);
+                    }
+                    if("支线"== result[i].szorderfrom && "发运未运抵"== result[i].szstatus_node){
+                        $("#obl_d").html(result[i].mm);
+                        $("#obl_d_abnormal").html(result[i].siabnormal_mm);
+                    }
+                    if("支线"== result[i].szorderfrom && "运抵待回单"== result[i].szstatus_node){
+                        $("#obl_e").html(result[i].mm);
+                        $("#obl_e_abnormal").html(result[i].siabnormal_mm);
+                    }
+                    updatetime = result[i].szdiff;
+                }
+
+                $("#sp_updatetime").html(updatetime);
+            },
+            error : function(errorMsg) {
+                //请求失败时执行该函数
+                //alert("请求数据失败!");
+            }
+        })
+
+        $.ajax({
+            type : "post",
+            async : true,            //异步请求（同步请求将会锁住浏览器，用户其他操作必须等待请求完成才可以执行）
+            url : dateHost+"/api/real_time.do?sztype=szwms",    //请求发送到TestServlet处
+            data : {},
+            dataType : "json",        //返回数据形式为json
+            success : function(result) {
+                $("#out_a").html("");
+                $("#out_b").html("");
+                $("#out_c").html("");
+                $("#in_a").html("");
+
+                var updatetime ;
+                for(var i=0;i<result.length;i++){
+                    if("out"== result[i].sztype && "PLAN"== result[i].szstatus){
+                        $("#out_a").html(result[i].mm);
+                    }
+                    if("out"== result[i].sztype && "INWORK"== result[i].szstatus){
+                        $("#out_b").html(result[i].mm);
+                    }
+                    if("out"== result[i].sztype && "PICKED"== result[i].szstatus){
+                        $("#out_c").html(result[i].mm);
+                    }
+                    if("in"== result[i].sztype && "PLAN"== result[i].szstatus){
+                        $("#in_a").html(result[i].mm);
+                    }
+
+                    updatetime = result[i].szdiff;
+                }
+
+                //$("#sp_updatetime").html(updatetime);
+            },
+            error : function(errorMsg) {
+                //请求失败时执行该函数
+                //alert("请求数据失败!");
+            }
+        })
+    }
+    queryOrder();
+
+    var seriesLabel = {
+        normal: {
+            show: true,
+            position:'inside',
+            color : '#FFFFFF'
+        }
+    }
+    function queryorg(szordertype,szstatus){
+        var sztitle =szordertype+szstatus+'逾期数客户分布'
+
+        var dom = document.getElementById("container_org");
+        var myChart2 = echarts.init(dom,'light');
+        option = null;
+        option = {
+            title : {
+                text: sztitle
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    crossStyle: {
+                        color: '#999'
+                    }
+                }
+            },
+            grid: {
+                y:30,
+                left: '1%',
+                right: '1%',
+                bottom: '1%',
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    // dataView: {show: true, readOnly: false},
+                    saveAsImage: {show: true}
+                }
+            },
+            xAxis: [
+                {
+                    type: 'value',
+                    splitLine:false,
+                    data: []
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'category',
+                    splitLine:false,
+                    axisLabel: {
+                        formatter: '{value} '
+                    }
+                }
+            ],
+            series: [
+                {
+                    name:'逾期数',
+                    type:'bar',
+                    label: {
+                        normal: {
+                            show: true,
+                            position: 'inside'
+                        }
+                    },
+                    itemStyle:{
+                        color:'red'
+                    },
+                    barMaxWidth:'20px',
+                    data:[]
+                }
+            ]
+        };
+
+        if (option && typeof option === "object") {
+            myChart2.setOption(option, true);
+        }
+        myChart2.showLoading();
+        var names1=[];
+        var series3=[];
+        var series4=[];
+        $.ajax({
+            type : "post",
+            async : true,            //异步请求（同步请求将会锁住浏览器，用户其他操作必须等待请求完成才可以执行）
+            url : dateHost+"/api/real_time.do?sztype=szorder_cus&ordertype="+szordertype+"&sznode="+szstatus,    //请求发送到TestServlet处
+            data : {},
+            dataType : "json",        //返回数据形式为json
+            success : function(result) {
+                //请求成功时执行该函数内容，result即为服务器返回的json对象
+                if (result) {
+                    for(var i=0;i<result.length;i++){
+                        if(result[i].siabnormal_mm!='0'){
+                            names1.push(result[i].ethd_custom_ebcu_name_cn);    //挨个取出类别并填入类别数组
+                            series3.push(result[i].mm);
+                            series4.push(result[i].siabnormal_mm);
+                        }
+
+                    }
+                    myChart2.hideLoading();    //隐藏加载动画
+                    myChart2.setOption({        //加载数据图表
+                        yAxis: {
+                            data: names1
+                        },
+                        series:[
+                            {
+                                name: '逾期数',
+                                stack: '合计',
+                                data: series4
+                            }
+                        ]
+                    });
+                    myChart2.on('click', function (param){
+                        //doerror(param.name)
+                        doErrorDetail(param.name);
+                    });
+                    myChart2.on('click');
+                }
+
+            },
+            error : function(errorMsg) {
+                //alert("图表请求数据失败!");
+                myChart2.hideLoading();
+            }
+        })
+
+
+        geoCoordMap=[];
+        data=[];
+        $.ajax({
+            type : "post",
+            async : true,            //异步请求（同步请求将会锁住浏览器，用户其他操作必须等待请求完成才可以执行）
+            url : dateHost+"/api/real_time.do?sztype=szorder_org&ordertype="+szordertype+"&sznode="+szstatus,    //请求发送到TestServlet处
+            data : {},
+            dataType : "json",        //返回数据形式为json
+            success : function(result) {
+                //请求成功时执行该函数内容，result即为服务器返回的json对象
+                var sitotail = 0;
+                if (result) {
+                    for(var i=0;i<result.length;i++){
+                        if(result[i].siabnormal_mm!='0'){
+                            geoCoordMap[result[i].szoffice] = new Array(result[i].szlongitude,result[i].szlatitude);
+                            data.push({
+                                name: result[i].szoffice,
+                                value: new Array(result[i].siabnormal_mm)
+                            });
+                            sitotail +=parseInt(result[i].siabnormal_mm) ;
+                        }
+
+                    }
+                    //更新地图数据
+                    option = {
+                        title: {
+                            text: szordertype+szstatus+'逾期数办事处分布',
+                            subtext:  ' 逾期数合计：'+sitotail,
+                            x: 'center',
+                            textStyle: {
+                                color: '#031525'
+                            },
+                            subtextStyle: {
+                                color: '#031525'
+                            }
+                        },geo: {
+                            show: true,
+                            map: 'zhongguo',
+                            roam: true,
+                            left: '250',
+                            right:'400',
+                            itemStyle: {
+                                normal: {
+                                    areaColor: '#031525',
+                                    borderColor: '#3B5077',
+                                },
+                                emphasis: {
+                                    areaColor: '#2B91B7',
+                                }, label:{
+                                    show:true
+                                }
+                            }
+                        },
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: function(params) {
+                                if (typeof(params.value)[2] == "undefined") {
+                                    return params.name + ' : ' + params.value;
+                                } else {
+                                    return params.name + ' : ' + params.value[2];
+                                }
+                            }
+                        },
+                        series: [{
+                            name: '点',
+                            type: 'scatter',
+                            coordinateSystem: 'geo',
+                            symbol: 'circle',
+                            symbolSize: function(val) {
+                                return 30;
+                            },
+                            label: {
+                                normal: {
+                                    show: true,
+                                    formatter: '{b}',
+                                    textStyle: {
+                                        color: '#000000',
+                                        fontSize: 9,
+                                    }
+                                }
+                            },
+                            itemStyle: {
+                                normal: {
+                                    color: '#fff', //标志颜色
+                                }
+                            },
+                            zlevel: 6,
+                            data: convertData(data),
+                        },{
+                            name: '点top',
+                            type: 'scatter',
+                            coordinateSystem: 'geo',
+                            symbol: 'circle',
+                            symbolSize: function(val) {
+                                return 40;
+                            },
+                            label: {
+                                normal: {
+                                    show: true,
+                                    formatter: '{b}',
+                                    textStyle: {
+                                        color: '#fff',
+                                        fontSize: 9,
+                                    }
+                                }
+                            },
+                            itemStyle: {
+                                normal: {
+                                    color: 'red', //标志颜色
+                                }
+                            },
+                            zlevel: 5,
+                            data: convertData(data.sort(function(a, b) {
+                                return b.value - a.value;
+                            }).slice(0, 3))
+                        }]
+                    }
+                    myChart.setOption(option, true);
+                    var count = 0;
+                    var timeTicket = null;
+                    var dataLength = option.series[0].data.length;
+                    timeTicket && clearInterval(timeTicket);
+                    timeTicket = setInterval(function() {
+                        myChart.dispatchAction({
+                            type: 'downplay',
+                            seriesIndex: 0,
+                        });
+                        myChart.dispatchAction({
+                            type: 'highlight',
+                            seriesIndex: 0,
+                            dataIndex: (count) % dataLength
+                        });
+                        myChart.dispatchAction({
+                            type: 'showTip',
+                            seriesIndex: 0,
+                            dataIndex: (count) % dataLength
+                        });
+                        count++;
+                    },3000);
+                }
+
+            },
+            error : function(errorMsg) {
+            }
+        })
+    }
+
+    function queryout(szordertype,szstatus){
+        var sztitle ='办事处分布'
+
+        var dom = document.getElementById("container_org");
+        var myChart2 = echarts.init(dom,'dark');
+
+        option = null;
+
+
+        option = {
+            title : {
+                text: sztitle
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    crossStyle: {
+                        color: '#999'
+                    }
+                }
+            },
+            grid: {
+                y:30,
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    // dataView: {show: true, readOnly: false},
+                    saveAsImage: {show: true}
+                }
+            },
+            xAxis: [
+                {
+                    type: 'value',
+                    splitLine:false,
+                    data: []
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'category',
+                    splitLine:false,
+                    axisLabel: {
+                        formatter: '{value} '
+                    }
+                }
+            ],
+            series: [
+                {
+                    name:'单量',
+                    type:'bar',
+                    label: {
+                        normal: {
+                            show: true,
+                            position: 'inside'
+                        }
+                    },
+                    itemStyle:{
+                        color:'#05C3F9'
+                    },
+                    barMaxWidth:'30px',
+                    data:[]
+                }
+            ]
+        };
+
+        if (option && typeof option === "object") {
+            myChart2.setOption(option, true);
+        }
+        myChart2.showLoading();
+        var names1=[];
+        var series3=[];
+        $.ajax({
+            type : "post",
+            async : true,            //异步请求（同步请求将会锁住浏览器，用户其他操作必须等待请求完成才可以执行）
+            url : dateHost+"/api/real_time.do?sztype=szwms_org&ordertype="+szordertype+"&sznode="+szstatus,    //请求发送到TestServlet处
+            data : {},
+            dataType : "json",        //返回数据形式为json
+            success : function(result) {
+                //请求成功时执行该函数内容，result即为服务器返回的json对象
+                if (result) {
+                    for(var i=0;i<result.length;i++){
+                        names1.push(result[i].szoffice);    //挨个取出类别并填入类别数组
+                        series3.push(result[i].mm);
+                    }
+                    myChart2.hideLoading();    //隐藏加载动画
+                    myChart2.setOption({        //加载数据图表
+                        yAxis: {
+                            data: names1
+                        },
+                        series:[
+                            {
+                                name: '单量',
+                                data: series3
+                            }
+                        ]
+                    });
+                    myChart2.on('click', function (param){
+                        //doerror(param.name)
+                        doErrorDetail(param.name);
+                    });
+                    myChart2.on('click');
+                }
+
+            },
+            error : function(errorMsg) {
+                //alert("图表请求数据失败!");
+                myChart2.hideLoading();
+            }
+        })
+    }
+    //setInterval(queryOrder,600000);
+    //setInterval(queryCar,590000);
+    function queryorgAbnormal(szordertype,szstatus,evt){
+        var e=(evt)?evt:window.event;
+        e.stopPropagation();
+        console.log('stopPropagation')
+        szordertype_down =szordertype;
+        szstatus_down=szstatus;
+        //$("#div_abnormal").show();
+        $("#div_abnormal").modal('show');
+        $("#Loading").modal('show');
+        $("#tcp_date_title").html("");
+        if(szstatus=='生效待调度'){
+            $("#tcp_date_title").append("<td>任务单号</td><td>城配订单号</td><td>创建时间</td><td>要求到达时间</td>");
+        }
+        if(szstatus=='调度待发运'){
+            $("#tcp_date_title").append("<td>任务单号</td><td>城配订单号</td><td>创建时间</td><td>要求到达时间</td>");
+        }
+        if(szstatus=='发运未运抵'){
+            $("#tcp_date_title").append("<td>任务单号</td><td>城配订单号</td><td>创建时间</td><td>要求到达时间</td>");
+        }
+        if(szstatus=='运抵待回单'){
+            $("#tcp_date_title").append("<td>任务单号</td><td>城配订单号</td><td>要求到达时间</td><td>应回单时间</td>");
+        }
+
+        $.ajax({
+            type : "post",
+            async : true,            //异步请求（同步请求将会锁住浏览器，用户其他操作必须等待请求完成才可以执行）
+            url : dateHost+"/api/real_time.do?sztype=tcp_order_list&ordertype="+szordertype+"&sznode="+szstatus,    //请求发送到TestServlet处
+            data : {},
+            dataType : "json",        //返回数据形式为json
+            success : function(result) {
+                $("#tcp_date_body").html("");
+                for(var i=0;i<result.length;i++){
+                    if(szstatus!='运抵待回单'){
+                        var szrow = " <tr><td>"+result[i].etht_no+"</td><td title='"+result[i].etht_external_order_no+"'>"+result[i].etht_external_order_no
+                            +"</td><td>"+result[i].create_time+"</td><td>"+result[i].ethd_require_consignee_time+"</td></tr>";
+                    }else{
+                        var szrow = " <tr><td>"+result[i].etht_no+"</td><td title='"+result[i].etht_external_order_no+"'>"+result[i].etht_external_order_no
+                            +"</td><td>"+result[i].ethd_require_consignee_time+"</td><td>"+result[i].szdate+"</td></tr>";
+                    }
+
+                    $("#tcp_date_body").append(szrow);
+                    $("#Loading").modal('hide');
+                }
+            },
+            error : function(errorMsg) {
+                $("#Loading").modal('hide');
+                //请求失败时执行该函数
+                //alert("图表请求数据失败!");
+
+            }
+        })
+    }
+
+    function doExportAbnormal(){
+        window.location.href =dateHost+ "/api/real_time_out.do?sztype=tcp_order_list&ordertype="+szordertype_down+"&sznode="+szstatus_down
+    }
+</script>
+</body>
+</html>

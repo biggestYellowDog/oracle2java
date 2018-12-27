@@ -1,0 +1,682 @@
+
+<%@ page language="java" pageEncoding="UTF-8" contentType="text/html;charset=UTF-8"%>
+
+<%@ include file="/common/taglibs.jsp"%>
+
+
+
+<script language="javascript" type="text/javascript" src="<s:url value='/plugin/artDialog4.1.7/jquery.artDialog.source.js?skin=simple'/>"></script>
+
+<script language="javascript" type="text/javascript" src="<s:url value='/plugin/artDialog4.1.7/plugins/iframeTools.source.js'/>"></script>
+
+
+
+<style type="text/css">
+
+    .selectTab{
+
+        width: 726px;
+
+        height: 43px;
+
+        background-image: url("<c:url value='/images/teachManagement/selectBG_studentActivity.png'/>");
+
+        background-repeat: no-repeat;
+
+        display: block;
+
+    }
+
+
+
+    .font-12{
+
+        font-family: '微软雅黑';
+
+        font-size: 12px;
+
+        font-weight: normal;
+
+        font-style: normal;
+
+        text-decoration: none;
+
+        color: #333333;
+
+    }
+
+
+
+    table.selectTable tr td{
+
+        padding: 4px 10px 4px 0px;
+
+    }
+
+
+
+    .classSelect{
+
+        width: 120px;
+
+        height: 22px;
+
+        font-family: '微软雅黑';
+
+        font-size: 13px;
+
+        color: #000000;
+
+        font-style: normal;
+
+        font-weight: normal;
+
+        text-decoration: none;
+
+    }
+
+
+
+    .errorPoint{
+
+        width: 121px;
+
+        height: 27px;
+
+        cursor:pointer;
+
+    }
+
+
+
+    .rank{
+
+        margin: 0px;
+
+        padding: 0px;
+
+        width: 240px;
+
+        height: 500px;
+
+        position: absolute;
+
+        top: 40px;
+
+        left: 745px;
+
+    }
+
+
+
+    .font-18{
+
+        text-align: left;
+
+        font-family: '微软雅黑';
+
+        font-size: 18px;
+
+        font-weight: normal;
+
+        font-style: normal;
+
+        text-decoration: none;
+
+        color: #333333;
+
+    }
+
+
+
+    /**-----输入搜索下拉框-----**/
+
+    .selectStyle{
+
+        width: 188px;
+
+        height: 22px;
+
+        font-family: '微软雅黑';
+
+        font-size: 12px;
+
+        color: #000000;
+
+        font-style: normal;
+
+        font-weight: normal;
+
+        text-decoration: none;
+
+    }
+
+    .selectContainer{
+
+        position:absolute;
+
+        border:1pt solid #c1c1c1;
+
+        overflow:hidden;
+
+        width:188px;
+
+        height:19px;
+
+        clip:rect(-1px 190px 190px 170px);
+
+    }
+
+
+
+    .inputContainer{
+
+        position:absolute;
+
+        border-top:1pt solid #c1c1c1;
+
+        border-left:1pt solid #c1c1c1;
+
+        border-bottom:1pt solid #c1c1c1;
+
+        width:170px;
+
+        height:19px;
+
+    }
+
+
+
+    .filterOption{
+
+        position:absolute;
+
+        width:100%;
+
+        min-height:150px;
+
+        background-color: white;
+
+        top: 22px;
+
+        display:none;
+
+        z-index: 3;
+
+    }
+
+
+
+    .line_option{
+
+        background-color: white;
+
+    }
+
+
+
+    .line_option_select{
+
+        background-color: grey;
+
+        cursor:pointer;
+
+    }
+
+    /**-----输入搜索下拉框-----**/
+
+
+
+</style>
+
+
+
+
+
+<script type="text/javascript" charset="UTF-8">
+
+    function initFilterOption(){
+
+        $("#filterOption>table").empty();
+
+        var curName = $("#studentName").val();
+
+        if( $.trim(curName) == "" ){
+
+            $("#filterOption>table").empty();
+
+            return;
+
+        }
+
+
+
+        $("#studentUserId_2>option").each(function(){
+
+            var key = $(this).val();
+
+            var value = $.trim($(this).text());
+
+            if( value.indexOf(curName) ==0 ){
+
+                $("#filterOption>table").append("<tr class='line_option'><td><span key='"+key+"'>" + value + "</span></td></tr>");
+
+            }
+
+        });
+
+    }
+
+
+
+    //通过键盘的up/down移动
+
+    function moveOption( moveDown ){
+
+        var selOption = $("#filterOption>table").find("tr.line_option_select");
+
+        if( moveDown ){
+
+            //没有选中的
+
+            if( selOption.length ==0 ){
+
+                $("#filterOption>table").find("tr").first().addClass("line_option_select");
+
+            }
+
+            //有选中的，且不是最后一个
+
+            else if(selOption.next("tr").length != 0 ){
+
+                selOption.removeClass("line_option_select");
+
+                selOption.next("tr").addClass("line_option_select");
+
+            }
+
+            else{
+
+                selOption.removeClass("line_option_select");
+
+                $("#filterOption>table").find("tr").first().addClass("line_option_select");
+
+            }
+
+        }
+
+        else{
+
+            //没有选中的
+
+            if( selOption.length ==0 ){
+
+                $("#filterOption>table").find("tr").last().addClass("line_option_select");
+
+            }
+
+            //有选中的，且不是第一个
+
+            else if(selOption.prev("tr").length != 0 ){
+
+                selOption.removeClass("line_option_select");
+
+                selOption.prev("tr").addClass("line_option_select");
+
+            }
+
+            else{
+
+                selOption.removeClass("line_option_select");
+
+                $("#filterOption>table").find("tr").last().addClass("line_option_select");
+
+            }
+
+        }
+
+    }
+
+
+
+    function selectOption(){
+
+        var selOption = $("#filterOption>table").find("tr.line_option_select");
+
+        if( selOption.length != 0 ){
+
+            var key = selOption.find("span").attr("key");
+
+            var value = $.trim(selOption.find("span").html());
+
+            $("#studentName").val( value );
+
+            $("#studentUserId_2 option[value='"+ key +"']").attr("selected", true);
+
+            $("#filterOption").hide();
+
+
+
+            var userId = $("#studentUserId_2").val();
+
+            var dateTime = new Date().getTime();
+
+            $("#activity_notification").load("<s:url value='/schoolclass/getClassMateActivityList.action?pageIndex='/>"+ "1&pageSize=5&isFirstQuery=true&queryTime="+ dateTime +"&id=" + userId );
+
+        }
+
+    }
+
+
+
+    window.document.onkeydown = function keydownHandler(evt){
+
+        evt = (evt) ? evt : window.event;
+
+        if (evt.keyCode) {
+
+            if(evt.keyCode == 38){
+
+                moveOption(false);
+
+                return false;
+
+            }
+
+            else if(evt.keyCode == 40){
+
+                moveOption(true);
+
+                return false;
+
+            }
+
+            else if(evt.keyCode == 13 ){
+
+                selectOption();
+
+            }
+
+        }
+
+
+
+    };
+
+
+
+    $().ready(function(){
+
+
+
+        //学生下拉框改变
+
+        $("#studentUserId_2").change(function(){
+
+            var userId = $("#studentUserId_2").val();
+
+            var userName = $.trim($("#studentUserId_2").find("option:selected").text());
+
+
+
+            var dateTime = new Date().getTime();
+
+            $("#activity_notification").load("<s:url value='/schoolclass/getClassMateActivityList.action?pageIndex='/>"+ "1&pageSize=5&isFirstQuery=true&queryTime="+ dateTime +"&id=" + userId );
+
+
+
+            $("#studentName").val( userName );
+
+        });
+
+
+
+        $("#studentName").focus(function(){
+
+            initFilterOption();
+
+            $("#filterOption").show();
+
+        });
+
+
+
+        $(document).bind("mouseup",function(evt){
+
+            var targetObj = $(evt.target);
+
+            if( targetObj.is("input") && targetObj.attr("id") == "studentName" ) {
+
+                //是学生输入框不做操作
+
+            }
+
+            else{
+
+                $("#filterOption").hide();
+
+            }
+
+
+
+        });
+
+
+
+        $("#studentName").bind("input propertychange",function(){
+
+            initFilterOption();
+
+            if( $("#filterOption").is(":hidden") ){
+
+                $("#filterOption").show();
+
+            }
+
+        });
+
+
+
+
+
+        //过滤后的学生姓名hover事件
+
+        $("#filterOption").find("tr").die().live({
+
+            mouseenter:function(){
+
+                $(this).addClass("line_option_select");
+
+            },
+
+            mouseleave:function(){
+
+                $(this).removeClass("line_option_select");
+
+            },
+
+
+
+            //过滤后的学生姓名选中事件
+
+            click:function(){
+
+                var key = $(this).find("span").attr("key");
+
+                var value = $.trim($(this).find("span").html());
+
+                $("#studentName").val( value );
+
+                $("#studentUserId_2 option[value='"+ key +"']").attr("selected", true);
+
+                $("#filterOption").hide();
+
+
+
+                var userId = $("#studentUserId_2").val();
+
+                var dateTime = new Date().getTime();
+
+                $("#activity_notification").load("<s:url value='/schoolclass/getClassMateActivityList.action?pageIndex='/>"+ "1&pageSize=5&isFirstQuery=true&queryTime="+ dateTime +"&id=" + userId );
+
+            }
+
+        });
+
+
+
+
+
+        //学习时长排行榜刷新Button
+
+        $(".ranking_refresh_btn").click(function(){
+
+            var schoolClassId = '${schoolClassId}';
+
+            $.ajax({
+
+                url: "<c:url value='/base/getStudyTimeList.action'/>",
+
+                type: "post",
+
+                async:true,
+
+                data:{schoolClassId:schoolClassId},
+
+                success: function( response ){
+
+                    $(".studyTimeRank").empty();
+
+                    $(".studyTimeRank").append(response);
+
+                },
+
+                error: function(reqObj, strError, strObj){
+
+                    alert("加载排行榜失败：" + strError);
+
+                }
+
+            });
+
+
+
+        });
+
+
+
+        $("#studentUserId_2").trigger("change");
+
+        $(".ranking_refresh_btn").trigger("click");
+
+    });
+
+</script>
+
+
+
+<div id="main">
+
+    <div id="left" style="width: 726px;">
+
+        <div class="selectTab">
+
+            <table class="selectTable" style="width: 300px;">
+
+                <tr>
+
+                    <td style="width: 1px;"></td>
+
+                    <td style="width:60px;">
+
+                        <div style="position:relative;margin-top: 5px;">
+
+                            <span class="font-12">学生姓名：</span>
+
+                        </div>
+
+                    </td>
+
+                    <td style="width:180px;">
+
+                        <div style="position:relative;height: 22px;margin-top: 5px;">
+
+							<span class="selectContainer">	
+
+								<select id="studentUserId_2" name="studentUserId_2" class="selectStyle" style="margin-top: -1px;">
+
+									<s:iterator value="studentList" var="optionPair" status="status">
+
+										<s:if test="#optionPair.extend == 'selected'">
+
+											<option selected="selected" value="<s:property value='#optionPair.key'/>"><s:property value='#optionPair.value'/></option>
+
+										</s:if>
+
+										<s:else>
+
+											<option value="<s:property value='#optionPair.key'/>"><s:property value='#optionPair.value'/></option>
+
+										</s:else>
+
+									</s:iterator>
+
+								</select>
+
+							</span>
+
+                            <span class="inputContainer">
+
+								<input type="text" name="studentName" id="studentName" value="" style="width:170px;height:15px;border:0pt;margin: 0px;">
+
+							</span>
+
+                            <div id="filterOption" class="filterOption">
+
+                                <table style="margin-bottom:0px;">
+
+
+
+                                </table>
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            </table>
+
+        </div>
+
+        <div id="activity_notification"></div>
+
+    </div>
+
+
+
+    <div id="right" class="rank">
+
+        <div style="margin-top: 5px;margin-bottom: 10px;">
+
+            <span class="font-18" style="font-weight: bold;">本月班级学习时长排行榜</span>
+
+            <span class="ranking_refresh_btn" style="margin-left:10px;" title="点击，刷新排行榜">
+
+				<img src="/images/new_exercise_refresh.png" style="width:22px;height:22px;">
+
+			</span>
+
+        </div>
+
+
+
+        <div class="studyTimeRank">
+
+        </div>
+
+    </div>
+
+</div>
